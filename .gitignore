@@ -36,3 +36,14 @@ Thumbs.db
 # --- IDE ---
 .vscode/
 .idea/
+
+# PlatformIO build artifacts
+.pio/
+.pioenvs/
+.piolibdeps/
+
+# Auto-generated deployment headers
+# (keep tracked — they prove the pipeline works end-to-end)
+# src/inference/model_weights_int8.h
+# src/inference/quant_params.h
+# src/inference/model_config.h
