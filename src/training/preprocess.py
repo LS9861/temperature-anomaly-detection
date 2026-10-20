@@ -1,5 +1,6 @@
 # preprocess.py (Real Data Version)
 import sys
+import os
 from pathlib import Path
 import joblib
 import numpy as np
@@ -7,7 +8,16 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
-INPUT_CSV = PROJECT_ROOT / "data" / "synthetic" / "real_temperature.csv"
+# If real data exists, use it. Otherwise, use synthetic data.
+REAL_DATA_PATH = PROJECT_ROOT / "data" / "synthetic" / "real_temperature.csv"
+SYNTHETIC_DATA_PATH = PROJECT_ROOT / "data" / "synthetic" / "synthetic_temperature.csv"
+
+if REAL_DATA_PATH.exists():
+    INPUT_CSV = REAL_DATA_PATH
+else:
+    INPUT_CSV = SYNTHETIC_DATA_PATH
+#INPUT_CSV = PROJECT_ROOT / "data" / "synthetic" / "real_temperature.csv"
+#INPUT_CSV = PROJECT_ROOT / "data" / "synthetic" / "synthetic_temperature.csv"
 OUTPUT_DIR = PROJECT_ROOT / "data" / "processed"
 MODELS_DIR = PROJECT_ROOT / "models"
 X_TRAIN_PATH = OUTPUT_DIR / "X_train.npy"
