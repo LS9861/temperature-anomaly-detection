@@ -14,6 +14,7 @@ then deploy to ESP32 for real-time anomaly detection.
 
 ## CI/CD pipeline
 added CI/CD Pipeline
+![CI Pipeline](https://github.com/LS9861/temperature-anomaly-detection/actions/workflows/ci.yml/badge.svg)
 
 ## Results
 
