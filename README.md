@@ -1,3 +1,4 @@
+<img width="573" height="329" alt="Screenshot 2026-10-20 222525" src="https://github.com/user-attachments/assets/0839da14-a219-4770-a17c-e17f5d8d11b2" />
 # Temperature Anomaly Detection (Edge AI on ESP32)
 
 End-to-end TinyML pipeline: train an LSTM Autoencoder on temperature data,
