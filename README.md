@@ -12,6 +12,9 @@ then deploy to ESP32 for real-time anomaly detection.
 4. **Evaluation** — Reconstruction error thresholding
 5. **Deployment** — ONNX → C header → ESP32 firmware
 
+## CI/CD pipeline
+added CI/CD Pipeline
+
 ## Results
 
 - Accuracy: 91.85%
