@@ -1,0 +1,46 @@
+// =============================================================================
+// main.cpp (Data Logger for Real-World Data Collection)
+// =============================================================================
+
+#include <Arduino.h>
+#include <OneWire.h>
+#include <DallasTemperature.h>
+
+#define ONE_WIRE_BUS 4
+
+OneWire oneWire(ONE_WIRE_BUS);
+DallasTemperature sensors(&oneWire);
+
+unsigned long lastRead = 0;
+const unsigned long READ_INTERVAL_MS = 2000; // Read every 2 seconds
+
+void setup()
+{
+    Serial.begin(115200);
+    delay(1000);
+
+    sensors.begin();
+    sensors.setResolution(12);
+
+    // Print CSV Header
+    Serial.println("timestamp_ms,temperature");
+}
+
+void loop()
+{
+    unsigned long now = millis();
+
+    if (now - lastRead >= READ_INTERVAL_MS)
+    {
+        lastRead = now;
+
+        sensors.requestTemperatures();
+        float tempC = sensors.getTempCByIndex(0);
+
+        if (tempC != DEVICE_DISCONNECTED_C)
+        {
+            // Print in CSV format: milliseconds, temperature
+            Serial.printf("%lu,%.2f\n", now, tempC);
+        }
+    }
+}

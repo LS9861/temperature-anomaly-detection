@@ -41,7 +41,7 @@ Hardware
 
     ESP32 (or similar)
 
-    DHT22 temperature sensor
+    DS18B20 temperature sensor
 	
 	Author
 

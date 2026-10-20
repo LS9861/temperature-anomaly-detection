@@ -14,6 +14,6 @@
 #define NUM_GATES    4
 
 // Anomaly threshold (from Phase 4)
-#define ANOMALY_THRESHOLD  0.171626f
+#define ANOMALY_THRESHOLD 0.500000f
 
 #endif  // MODEL_CONFIG_H

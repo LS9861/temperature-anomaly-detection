@@ -1,58 +1,57 @@
 // =============================================================================
-// main.cpp  (Phase 5.3.1 — Sensor Test)
-// Purpose: Verify DS18B20 works on ESP32-C3 SuperMini
+// main.cpp  (Phase 5.3.3 — AI Inference)
 // =============================================================================
 
 #include <Arduino.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
+#include "anomaly_detector.h"
+#include "model_config.h"
 
 // --- Pin definitions ---
-#define ONE_WIRE_BUS  4    // GPIO4 → DS18B20 data pin
-#define LED_GREEN     2    // Optional green LED
-#define LED_RED       3    // Optional red LED
+#define ONE_WIRE_BUS  4
+#define LED_GREEN     2
+#define LED_RED       3
 
-// --- OneWire + DallasTemperature setup ---
+// --- OneWire setup ---
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
 
 // --- Timing ---
 unsigned long lastRead = 0;
-const unsigned long READ_INTERVAL_MS = 1000;   // Read every 1 second
+const unsigned long READ_INTERVAL_MS = 1000;
 
 void setup() {
     Serial.begin(115200);
-    delay(1000);   // Wait for serial to be ready
+    delay(1000);
 
-    Serial.println();
-    Serial.println("========================================");
-    Serial.println("DS18B20 Sensor Test — ESP32-C3 SuperMini");
+    Serial.println("\n========================================");
+    Serial.println("Edge AI Anomaly Detection — ESP32-C3");
     Serial.println("========================================");
 
-    // Initialize LEDs
     pinMode(LED_GREEN, OUTPUT);
     pinMode(LED_RED, OUTPUT);
     digitalWrite(LED_GREEN, LOW);
     digitalWrite(LED_RED, LOW);
 
-    // Initialize DS18B20
     sensors.begin();
     int deviceCount = sensors.getDeviceCount();
     Serial.printf("Found %d DS18B20 device(s)\n", deviceCount);
 
     if (deviceCount == 0) {
         Serial.println("ERROR: No DS18B20 detected!");
-        Serial.println("Check wiring: VCC=3.3V, GND=GND, DATA=GPIO4");
-        Serial.println("Check 4.7k pull-up between VCC and DATA");
         while (1) {
             digitalWrite(LED_RED, !digitalRead(LED_RED));
             delay(200);
         }
     }
 
-    // Set resolution (12-bit = 0.0625°C precision, ~750ms conversion)
     sensors.setResolution(12);
-    Serial.println("Sensor ready. Reading every 1 second...\n");
+    
+    // Initialize the AI engine
+    init_ai_engine();
+    Serial.println("AI Engine Initialized.");
+    Serial.printf("Waiting for %d samples to fill buffer...\n", WINDOW_SIZE);
 }
 
 void loop() {
@@ -61,21 +60,34 @@ void loop() {
     if (now - lastRead >= READ_INTERVAL_MS) {
         lastRead = now;
 
-        // Request temperature (blocking, ~750ms at 12-bit)
         sensors.requestTemperatures();
-
-        // Read in Celsius
         float tempC = sensors.getTempCByIndex(0);
 
-        // Check for read error
         if (tempC == DEVICE_DISCONNECTED_C) {
             Serial.println("ERROR: Sensor disconnected");
-            digitalWrite(LED_RED, HIGH);
-            digitalWrite(LED_GREEN, LOW);
+            return;
+        }
+
+        // Feed the sensor data into the AI engine
+        add_temperature_sample(tempC);
+
+        // If the buffer is full, run inference
+        if (is_buffer_full()) {
+            float error = run_inference();
+
+            Serial.printf("Temp: %.2f °C | Error: %.6f | Thr: %.6f | ", tempC, error, ANOMALY_THRESHOLD);
+
+            if (error > ANOMALY_THRESHOLD) {
+                Serial.println("⚠️ ANOMALY DETECTED ⚠️");
+                digitalWrite(LED_RED, HIGH);
+                digitalWrite(LED_GREEN, LOW);
+            } else {
+                Serial.println("NORMAL");
+                digitalWrite(LED_GREEN, HIGH);
+                digitalWrite(LED_RED, LOW);
+            }
         } else {
-            Serial.printf("Temperature: %.2f °C\n", tempC);
-            digitalWrite(LED_GREEN, HIGH);
-            digitalWrite(LED_RED, LOW);
+            Serial.printf("Temp: %.2f °C | Filling buffer...\n", tempC);
         }
     }
 }
