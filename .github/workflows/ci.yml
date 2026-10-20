@@ -1,0 +1,55 @@
+name: Temperature AI CI Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  # JOB 1: Test the Python AI Pipeline
+  test-python-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+        
+      - name: Run Preprocessing (using synthetic data for CI)
+        # Note: CI doesn't have your real_temperature.csv, so we use synthetic
+        run: python scripts/generate_synthetic_data.py && python src/training/preprocess.py
+        
+      - name: Train Model (Quick 5-epoch test)
+        run: python src/training/train_autoencoder.py --epochs 5
+        
+      - name: Quantize for ESP32
+        run: python src/deployment/quantize_to_int8.py
+
+  # JOB 2: Build the ESP32 Firmware
+  build-firmware:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          
+      - name: Install PlatformIO
+        run: pip install platformio
+        
+      - name: Build ESP32-C3 Firmware
+        run: pio run -d src/inference
+        
+      - name: Upload Firmware Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: esp32-firmware
+          path: src/inference/.pio/build/esp32-c3-devkitm-1/firmware.bin
