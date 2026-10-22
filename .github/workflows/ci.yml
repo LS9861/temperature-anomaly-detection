@@ -32,7 +32,7 @@ jobs:
       - name: Quantize for ESP32
         run: python src/deployment/quantize_to_int8.py
 
-  # JOB 2: Build the ESP32 Firmware
+  # JOB 2: Build the ESP32 Firmware and create a single merged binary
   build-firmware:
     runs-on: ubuntu-latest
     steps:
@@ -43,17 +43,27 @@ jobs:
         with:
           python-version: '3.11'
           
-      - name: Install PlatformIO
-        run: pip install platformio
+      - name: Install PlatformIO and esptool
+        run: pip install platformio esptool
         
       - name: Build ESP32-C3 Firmware
         run: pio run -d src/inference
         
-      - name: Upload Firmware Artifact
+      - name: Create Merged Binary
+        run: |
+          BUILD_DIR="src/inference/.pio/build/esp32-c3-devkitm-1"
+          esptool --chip esp32c3 merge_bin -o merged_firmware.bin \
+            --flash_mode dio --flash_freq 40m --flash_size 4MB \
+            0x0 "$BUILD_DIR/bootloader.bin" \
+            0x8000 "$BUILD_DIR/partitions.bin" \
+            0xe000 "$BUILD_DIR/boot_app0.bin" \
+            0x10000 "$BUILD_DIR/firmware.bin"
+            
+      - name: Upload Merged Firmware Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: esp32-firmware
-          path: src/inference/.pio/build/esp32-c3-devkitm-1/firmware.bin
+          name: esp32-merged-firmware
+          path: merged_firmware.bin
 
   # JOB 3: Continuous Delivery (Create Release on Tag)
   release-firmware:
@@ -65,16 +75,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Download Firmware Artifact
+      - name: Download Merged Firmware Artifact
         uses: actions/download-artifact@v4
         with:
-          name: esp32-firmware
+          name: esp32-merged-firmware
           path: ./firmware
           
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          files: ./firmware/firmware.bin
+          files: ./firmware/merged_firmware.bin
           name: Release ${{ github.ref_name }}
           draft: false
           prerelease: false
