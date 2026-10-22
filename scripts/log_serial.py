@@ -28,7 +28,7 @@ def main():
         print(f"Logging data to: {OUTPUT_FILE}")
         print("Press Ctrl+C to stop logging.\n")
         
-        with open(OUTPUT_FILE, 'w') as f:
+        with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
             # Write the header
             f.write("timestamp_ms,temperature\n")
             
