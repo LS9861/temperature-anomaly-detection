@@ -21,7 +21,7 @@ import torch.nn as nn
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
 MODEL_PATH  = PROJECT_ROOT / "models" / "lstm_autoencoder.pth"
-INFERENCE_DIR = PROJECT_ROOT / "src" / "inference"
+INFERENCE_DIR = PROJECT_ROOT / "src" / "inference"/"src"
 INFERENCE_DIR.mkdir(parents=True, exist_ok=True)
 
 WEIGHTS_INT8_PATH = INFERENCE_DIR / "model_weights_int8.h"
@@ -288,8 +288,8 @@ print(f"  Reduction:               {fp32_bytes/int8_bytes:.1f}x smaller")
 print(f"  ESP32 usable RAM:        ~320 KB")
 print(f"  Usage after quantize:    {100*int8_bytes/1024/320:.1f}% of usable")
 print(f"\n  Generated files:")
-print(f"    src/inference/model_weights_int8.h")
-print(f"    src/inference/quant_params.h")
-print(f"    src/inference/model_config.h")
+print(f"    src/inference/src/model_weights_int8.h")
+print(f"    src/inference/src/quant_params.h")
+print(f"    src/inference/src/model_config.h")
 print("\nNext: Phase 5.3 — Write ESP32 firmware")
 print("=" * 60)

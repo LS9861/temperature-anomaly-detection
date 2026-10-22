@@ -9,27 +9,27 @@
 
 // Symmetric INT8 quantization: float_value = int8_value * scale
 
-const float enc_lstm_W_ih_l0_scale = 3.3539829310e-03f;
-const float enc_lstm_W_hh_l0_scale = 5.3620915860e-03f;
-const float enc_lstm_b_ih_l0_scale = 4.9228537828e-03f;
-const float enc_lstm_b_hh_l0_scale = 4.8208795488e-03f;
-const float enc_lstm_W_ih_l1_scale = 1.2812386267e-02f;
-const float enc_lstm_W_hh_l1_scale = 7.4004963972e-03f;
-const float enc_lstm_b_ih_l1_scale = 7.7777407132e-03f;
-const float enc_lstm_b_hh_l1_scale = 6.8176127970e-03f;
-const float enc_fc_W_scale = 7.7101811767e-03f;
-const float enc_fc_b_scale = 7.7353982488e-04f;
-const float dec_fc_W_scale = 4.9994988367e-03f;
-const float dec_fc_b_scale = 1.6819228185e-03f;
-const float dec_lstm_W_ih_l0_scale = 1.3942923397e-02f;
-const float dec_lstm_W_hh_l0_scale = 7.9989060760e-03f;
-const float dec_lstm_b_ih_l0_scale = 7.3139243759e-03f;
-const float dec_lstm_b_hh_l0_scale = 8.5805393755e-03f;
-const float dec_lstm_W_ih_l1_scale = 1.5889041126e-02f;
-const float dec_lstm_W_hh_l1_scale = 1.2613719329e-02f;
-const float dec_lstm_b_ih_l1_scale = 6.6445157863e-03f;
-const float dec_lstm_b_hh_l1_scale = 7.3363850825e-03f;
-const float out_fc_W_scale = 2.4752425961e-03f;
-const float out_fc_b_scale = 1.2314609194e-04f;
+const float enc_lstm_W_ih_l0_scale = 3.5005460959e-03f;
+const float enc_lstm_W_hh_l0_scale = 6.7864255980e-03f;
+const float enc_lstm_b_ih_l0_scale = 4.7031329013e-03f;
+const float enc_lstm_b_hh_l0_scale = 4.0854113176e-03f;
+const float enc_lstm_W_ih_l1_scale = 1.3988995925e-02f;
+const float enc_lstm_W_hh_l1_scale = 9.5090838149e-03f;
+const float enc_lstm_b_ih_l1_scale = 7.8720068559e-03f;
+const float enc_lstm_b_hh_l1_scale = 7.9024825245e-03f;
+const float enc_fc_W_scale = 1.0190801695e-02f;
+const float enc_fc_b_scale = 9.4104389427e-04f;
+const float dec_fc_W_scale = 4.5351688750e-03f;
+const float dec_fc_b_scale = 1.5292330645e-03f;
+const float dec_lstm_W_ih_l0_scale = 1.1121127754e-02f;
+const float dec_lstm_W_hh_l0_scale = 9.1728251427e-03f;
+const float dec_lstm_b_ih_l0_scale = 6.8362378515e-03f;
+const float dec_lstm_b_hh_l0_scale = 6.5939510241e-03f;
+const float dec_lstm_W_ih_l1_scale = 1.2569165789e-02f;
+const float dec_lstm_W_hh_l1_scale = 1.1436232366e-02f;
+const float dec_lstm_b_ih_l1_scale = 7.4243317358e-03f;
+const float dec_lstm_b_hh_l1_scale = 7.4833971448e-03f;
+const float out_fc_W_scale = 3.6505076569e-03f;
+const float out_fc_b_scale = 3.2445541001e-04f;
 
 #endif  // QUANT_PARAMS_H
