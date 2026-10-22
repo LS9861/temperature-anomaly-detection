@@ -9,7 +9,7 @@ from sklearn.preprocessing import StandardScaler
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 # If real data exists, use it. Otherwise, use synthetic data.
-REAL_DATA_PATH = PROJECT_ROOT / "data" / "synthetic" / "real_temperature.csv"
+REAL_DATA_PATH = PROJECT_ROOT / "data" / "synthetic" / "real_temperature_24h.csv"
 SYNTHETIC_DATA_PATH = PROJECT_ROOT / "data" / "synthetic" / "synthetic_temperature.csv"
 
 if REAL_DATA_PATH.exists():
