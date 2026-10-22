@@ -12,7 +12,7 @@ BAUD_RATE = 115200
 
 # The output file will be saved in the data/synthetic/ folder
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-OUTPUT_FILE = PROJECT_ROOT / "data" / "synthetic" / "real_temperature_24h.csv"
+OUTPUT_FILE = PROJECT_ROOT / "data" / "synthetic" / "real_temperature_test.csv"
 
 # =============================================================================
 # Main Loop
