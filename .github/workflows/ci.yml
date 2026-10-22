@@ -52,6 +52,11 @@ jobs:
       - name: Create Merged Binary
         run: |
           BUILD_DIR="src/inference/.pio/build/esp32-c3-devkitm-1"
+          
+          # Copy boot_app0.bin from the PlatformIO framework package
+          cp ~/.platformio/packages/framework-arduinoespressif32/tools/partitions/boot_app0.bin "$BUILD_DIR/"
+          
+          # Merge all files into one
           esptool --chip esp32c3 merge_bin -o merged_firmware.bin \
             --flash_mode dio --flash_freq 40m --flash_size 4MB \
             0x0 "$BUILD_DIR/bootloader.bin" \
