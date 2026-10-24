@@ -21,7 +21,7 @@ const float SCALER_MEAN = 19.753339f;
 const float SCALER_STD = 0.985661f;
 
 // Threshold from evaluate_model.py (1D-CNN)
-const float ANOMALY_THRESHOLD = 1.500000f;
+const float ANOMALY_THRESHOLD = 2.500000f;
 
 // --- Sensor Setup ---
 OneWire oneWire(ONE_WIRE_BUS);
