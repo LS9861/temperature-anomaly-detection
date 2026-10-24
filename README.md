@@ -1,3 +1,4 @@
+<img width="832" height="522" alt="LogAndHWSetup" src="https://github.com/user-attachments/assets/f8a38678-25d5-4884-b356-4e759cc18249" />
 # Temperature Anomaly Detection (Edge AI on ESP32-C3)
 
 End-to-end TinyML pipeline: train a 1D Convolutional Autoencoder on real temperature data, quantize to INT8, and deploy to an ESP32-C3 for real-time anomaly detection.
