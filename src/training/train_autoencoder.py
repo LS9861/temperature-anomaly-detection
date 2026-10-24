@@ -14,6 +14,12 @@ import torch.nn as nn
 from torch.utils.data import DataLoader, TensorDataset
 import matplotlib.pyplot as plt
 
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument('--epochs', type=int, default=50)
+args = parser.parse_args()
+EPOCHS = args.epochs
+
 # =============================================================================
 # SECTION 1: PATH SETUP
 # =============================================================================
@@ -38,7 +44,7 @@ RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 WINDOW_SIZE   = 50
 INPUT_SIZE    = 1
 BATCH_SIZE    = 32
-EPOCHS        = 50
+#EPOCHS        = 50
 LEARNING_RATE = 0.001
 DEVICE        = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 

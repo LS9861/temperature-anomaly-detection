@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main ]
     tags:
-      - 'v*' # Trigger on version tags like v1.0, v2.0
+      - 'v*'
   pull_request:
     branches: [ main ]
 
@@ -23,16 +23,19 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
         
-      - name: Run Preprocessing (using synthetic data for CI)
+      - name: Run Preprocessing (synthetic data for CI)
         run: python scripts/generate_synthetic_data.py && python src/training/preprocess.py
         
-      - name: Train Model (Quick 5-epoch test)
+      - name: Train 1D-CNN (Quick 5-epoch test)
         run: python src/training/train_autoencoder.py --epochs 5
         
-      - name: Quantize for ESP32
-        run: python src/deployment/quantize_to_int8.py
+      - name: Evaluate Model
+        run: python src/training/evaluate_model.py
+        
+      - name: Export ONNX
+        run: python src/training/export_onnx.py
 
-  # JOB 2: Build the ESP32 Firmware and create a single merged binary
+  # JOB 2: Build the ESP32 Firmware
   build-firmware:
     runs-on: ubuntu-latest
     steps:
@@ -52,11 +55,7 @@ jobs:
       - name: Create Merged Binary
         run: |
           BUILD_DIR="src/inference/.pio/build/esp32-c3-devkitm-1"
-          
-          # Copy boot_app0.bin from the PlatformIO framework package
           cp ~/.platformio/packages/framework-arduinoespressif32/tools/partitions/boot_app0.bin "$BUILD_DIR/"
-          
-          # Merge all files into one
           esptool --chip esp32c3 merge_bin -o merged_firmware.bin \
             --flash_mode dio --flash_freq 40m --flash_size 4MB \
             0x0 "$BUILD_DIR/bootloader.bin" \
@@ -70,7 +69,7 @@ jobs:
           name: esp32-merged-firmware
           path: merged_firmware.bin
 
-  # JOB 3: Continuous Delivery (Create Release on Tag)
+  # JOB 3: Continuous Delivery (Release on Tag)
   release-firmware:
     needs: [test-python-pipeline, build-firmware]
     if: startsWith(github.ref, 'refs/tags/v')
