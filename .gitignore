@@ -18,7 +18,11 @@ data/processed/*.npy
 # --- Models (large binaries) ---
 models/*.pth
 models/*.onnx
+models/*.onnx.data
 models/*.pkl
+models/*.tflite
+models/saved_model/
+models/lstm_autoencoder.onnx.data
 
 # --- Results (regenerate) ---
 results/*.png
@@ -41,6 +45,9 @@ Thumbs.db
 .pio/
 .pioenvs/
 .piolibdeps/
+
+# --- PlatformIO libraries ---
+src/inference/lib/
 
 # Auto-generated deployment headers
 # (keep tracked — they prove the pipeline works end-to-end)

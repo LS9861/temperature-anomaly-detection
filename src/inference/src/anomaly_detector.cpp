@@ -37,16 +37,25 @@ void init_ai_engine()
     buffer_ready = false;
 }
 
-void add_temperature_sample(float temp_celsius)
-{
+void add_temperature_sample(float temp_celsius) {
+    // 1. Normalize
     float normalized = (temp_celsius - SCALER_MEAN) / SCALER_STD;
+
+    // 2. Add to buffer
     input_buffer[buffer_index] = normalized;
+    
+    // 3. Advance index and wrap around
     buffer_index++;
-    if (buffer_index >= WINDOW_SIZE)
-    {
+    if (buffer_index >= WINDOW_SIZE) {
         buffer_index = 0;
         buffer_ready = true;
     }
+
+    // DEBUG: Print the raw input to prove the buffer is updating
+    Serial.print("DEBUG: Buffer Index = ");
+    Serial.print(buffer_index);
+    Serial.print(" | Normalized Val = ");
+    Serial.println(normalized);
 }
 
 bool is_buffer_full() { return buffer_ready; }
@@ -157,6 +166,11 @@ float run_inference()
 {
     if (!buffer_ready)
         return 0.0f;
+	    // HARD RESET STATES to prevent drift
+    for (int i = 0; i < HIDDEN_SIZE; i++) {
+        hidden_state[i] = 0.0f;
+        cell_state[i] = 0.0f;
+    }
 
     static float encoder_out[WINDOW_SIZE * HIDDEN_SIZE];
     static float latent[LATENT_SIZE];
