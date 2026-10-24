@@ -16,12 +16,14 @@
 #define INPUT_SIZE 1
 
 // --- CRITICAL: Values from your 1D-CNN evaluation ---
-// Scaler values (from scaler.pkl)
 const float SCALER_MEAN = 19.753339f;
 const float SCALER_STD = 0.985661f;
 
-// Threshold from evaluate_model.py (1D-CNN)
-const float ANOMALY_THRESHOLD = 2.500000f;
+// --- HYSTERESIS THRESHOLDS ---
+// Alarm turns ON when error > 3.5
+// Alarm turns OFF when error < 3.0
+const float THRESHOLD_ON = 3.500000f;
+const float THRESHOLD_OFF = 3.000000f;
 
 // --- Sensor Setup ---
 OneWire oneWire(ONE_WIRE_BUS);
@@ -42,11 +44,14 @@ float input_buffer[WINDOW_SIZE];
 int buffer_index = 0;
 bool buffer_ready = false;
 
+// Hysteresis state
+bool alarm_active = false;
+
 void setup()
 {
     Serial.begin(115200);
     delay(2000);
-    Serial.println("\n=== 1D-CNN Anomaly Detection ===");
+    Serial.println("\n=== 1D-CNN Anomaly Detection (Hysteresis) ===");
 
     pinMode(LED_GREEN, OUTPUT);
     pinMode(LED_RED, OUTPUT);
@@ -67,18 +72,16 @@ void setup()
     }
 
     // --- 2. Register Ops (CNN specific) ---
-    // We register the operations that a 1D-CNN uses.
-    // If it fails, it will tell us which op is missing.
-    static tflite::MicroMutableOpResolver<15> resolver;
-    resolver.AddConv2D();     // Used for 1D convolution
-    resolver.AddMaxPool2D();  // Used for 1D max pooling
-    resolver.AddReshape();    // Used for flattening/reshaping
-    resolver.AddRelu();       // Activation
-    resolver.AddPad();        // Used for padding the sequence
-    resolver.AddQuantize();   // Input/Output quantization
-    resolver.AddDequantize(); // Input/Output dequantization
-    resolver.AddTranspose();  // <-- ADD THIS
-    resolver.AddTransposeConv(); // <-- ADD THIS
+    static tflite::MicroMutableOpResolver<12> resolver;
+    resolver.AddConv2D();
+    resolver.AddMaxPool2D();
+    resolver.AddReshape();
+    resolver.AddRelu();
+    resolver.AddPad();
+    resolver.AddQuantize();
+    resolver.AddDequantize();
+    resolver.AddTranspose();
+    resolver.AddTransposeConv();
 
     // --- 3. Create Interpreter ---
     Serial.println("Creating interpreter...");
@@ -164,9 +167,24 @@ void loop()
     }
     mse /= WINDOW_SIZE;
 
-    Serial.printf("RAW: %.2f C | Error: %.4f | Thr: %.4f | ", tempC, mse, ANOMALY_THRESHOLD);
+    // --- HYSTERESIS LOGIC ---
+    // Turn ON if above high threshold
+    if (mse > THRESHOLD_ON)
+    {
+        alarm_active = true;
+    }
+    // Turn OFF only if below low threshold
+    else if (mse < THRESHOLD_OFF)
+    {
+        alarm_active = false;
+    }
+    // Between 3.0 and 3.5: keep the previous state (no chatter)
 
-    if (mse > ANOMALY_THRESHOLD)
+    // --- Output and LED ---
+    Serial.printf("RAW: %.2f C | Error: %.4f | ON: %.1f | OFF: %.1f | ",
+                  tempC, mse, THRESHOLD_ON, THRESHOLD_OFF);
+
+    if (alarm_active)
     {
         Serial.println("ANOMALY");
         digitalWrite(LED_RED, HIGH);
